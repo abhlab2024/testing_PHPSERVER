@@ -7,7 +7,7 @@ phpinfo();
 
 
 
-$servername = "db3";
+$servername = "db";
 $username = "root";
 $password = "g7@Vx#2q";
 $dbname = "testdb"; // utf8mb4_general_ci   
