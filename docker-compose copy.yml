@@ -1,0 +1,46 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - 8673:80
+    depends_on:
+      - db3
+    environment:
+      - MYSQL_HOST=${MYSQL_HOST:-db3}
+      - MYSQL_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-testdb}
+      - MYSQL_USER=${MYSQL_USER:-abh}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-g7@Vx#2q}
+
+  db3:
+    image: mysql:latest
+    container_name: db3
+    volumes:
+      - db:/var/lib/mysql/
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-g7@Vx#2q}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-testdb}
+      - MYSQL_USER=${MYSQL_USER:-abh}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-g7@Vx#2q}
+    labels:
+      - coolify.expose_as=mysql-db3
+      - coolify.managed=true
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8674:80
+    environment:
+      - PMA_HOST=${MYSQL_HOST:-db3}
+      - PHP_UPLOAD_MAX_FILESIZE=64M
+      - PHP_POST_MAX_SIZE=64M
+      - PHP_MEMORY_LIMIT=256M
+      - PHP_MAX_EXECUTION_TIME=300
+      - UPLOAD_LIMIT=300M
+    depends_on:
+      - db3
+
+volumes:
+  db:
