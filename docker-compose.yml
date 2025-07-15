@@ -14,7 +14,7 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:-g7@Vx#2q}
 
   db3:
-    image: mysql:8.0
+    image: mysql:latest
     container_name: db3
     volumes:
       - db:/var/lib/mysql/
@@ -29,7 +29,7 @@ services:
     labels:
       - coolify.expose_as=mysql-db3
       - coolify.managed=true
-    restart: unless-stopped
+      - coolify.port=3306
 
   phpmyadmin:
     image: phpmyadmin
