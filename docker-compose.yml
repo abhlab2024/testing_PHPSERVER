@@ -14,7 +14,7 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:-g7@Vx#2q}
 
   db3:
-    image: mysql:latest
+    image: mysql:8.0
     container_name: db3
     volumes:
       - db:/var/lib/mysql/
@@ -25,10 +25,11 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE:-testdb}
       - MYSQL_USER=${MYSQL_USER:-abh}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:-g7@Vx#2q}
-    MYSQL_ROOT_HOST: "%"
+      - MYSQL_ROOT_HOST=%  # Fixed: Removed colon, this should be = not :
     labels:
       - coolify.expose_as=mysql-db3
       - coolify.managed=true
+    restart: unless-stopped
 
   phpmyadmin:
     image: phpmyadmin
