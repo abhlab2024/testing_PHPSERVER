@@ -1,11 +1,4 @@
-version: '3.8'
-
-networks:
-  # Define a custom network for better service discovery
-  mysql_network:
-    driver: bridge
-    name: mysql_shared_network
-
+version: '3'
 services:
   web:
     build: .
@@ -13,55 +6,37 @@ services:
       - 8673:80
     depends_on:
       - db3
-    networks:
-      - mysql_network
     environment:
       - MYSQL_HOST=${MYSQL_HOST:-db3}
       - MYSQL_PORT=${MYSQL_PORT:-3306}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-testdb}
       - MYSQL_USER=${MYSQL_USER:-abh}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:-g7@Vx#2q}
-    labels:
-      - coolify.managed=true
 
   db3:
-    image: mysql:8.0
+    image: mysql:latest
     container_name: db3
-    restart: unless-stopped
-    networks:
-      - mysql_network
     volumes:
       - db:/var/lib/mysql/
+    ports:
+      - "3307:3306" 
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-g7@Vx#2q}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-testdb}
       - MYSQL_USER=${MYSQL_USER:-abh}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:-g7@Vx#2q}
-    ports:
-      - ${MYSQL_EXTERNAL_PORT:-3306}:3306
+    MYSQL_ROOT_HOST: "%"
     labels:
       - coolify.expose_as=mysql-db3
       - coolify.managed=true
-      - coolify.service_type=database
-      - coolify.database_type=mysql
-      # These labels help other Coolify apps discover this service
-      - coolify.mysql.host=db3
-      - coolify.mysql.port=3306
-      - coolify.mysql.database=${MYSQL_DATABASE:-testdb}
-      - coolify.mysql.user=${MYSQL_USER:-abh}
 
   phpmyadmin:
-    image: phpmyadmin:latest
-    restart: unless-stopped
+    image: phpmyadmin
+    restart: always
     ports:
       - 8674:80
-    networks:
-      - mysql_network
     environment:
       - PMA_HOST=${MYSQL_HOST:-db3}
-      - PMA_PORT=${MYSQL_PORT:-3306}
-      - PMA_USER=${MYSQL_USER:-abh}
-      - PMA_PASSWORD=${MYSQL_PASSWORD:-g7@Vx#2q}
       - PHP_UPLOAD_MAX_FILESIZE=64M
       - PHP_POST_MAX_SIZE=64M
       - PHP_MEMORY_LIMIT=256M
@@ -69,11 +44,6 @@ services:
       - UPLOAD_LIMIT=300M
     depends_on:
       - db3
-    labels:
-      - coolify.managed=true
 
 volumes:
   db:
-    driver: local
-    labels:
-      - coolify.managed=true
